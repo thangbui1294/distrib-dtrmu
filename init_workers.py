@@ -34,7 +34,7 @@ Content-Disposition: attachment; filename="userdata.txt"
 			"cd /home/ec2-user", 
 			"git clone https://github.com/thangbui1294/distrib-dtrmu.git", 
 			"chmod 777 /home/ec2-user/distrib-dtrmu/run-node.bash", 
-			"sh /home/ec2-user/da-project/run-node.bash {}".format(nodeName)
+			"sh /home/ec2-user/distrib-dtrmu/run-node.bash {}".format(nodeName)
 			])
 	
 		f.write(headPart + bashOnRun)
