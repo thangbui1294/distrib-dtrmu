@@ -1,0 +1,24 @@
+Compiling systems scripts:
+=====================================================
+script to compile the data generator program (running from \mining-algorithms\learning-data-generator):
+cd src 
+javac -cp "../libs/commons-lang3-3.4.jar." -d ../bin ./*.java
+------------------------------------
+script to compile the improving policy algorithm program (running from \mining-algorithms\improve-policy\):
+cd src
+javac -cp "../libs/commons-math-2.2.jar;../libs/commons-lang3-3.4.jar;../libs/commons-math3-3.3.jar;../libs/jdi.jar." -d ../bin algo/*.java util/*.java
+
+
+
+Running systems scripts:
+=====================================================
+script to run the data generator program with a config file (running from \mining-algorithms\learning-data-generator):
+cd bin
+java -Xms3g -Xmx3g -cp ".;../libs/commons-lang3-3.4.jar." learningdatagenerator/LearningDataGenerator ../configs/edoc_0.conf
+------------------------------------
+script to run the learning algorithm program (phase 1) (running from \mining-algorithms\DTRMU\):
+python main.py ./configs/edoc_0.conf 
+------------------------------------
+script to run the improve policy program (phase 2) (running from \mining-algorithms\improve-policy\):
+cd bin
+java -Xms3g -Xmx3g -cp ".;../libs/commons-math-2.2.jar;../libs/commons-lang3-3.4.jar;../libs/commons-math3-3.3.jar;../libs/jdi.jar." algo/ReBACMiner ../configs/edoc_0.conf

@@ -1,0 +1,335 @@
+--------------------------------------------HelpdeskOperator - Contract - createOneTimeWorkOrder
+|--- <provider.tenants.id contains tenant.id> = 0
+|   |--- class: 0
+|--- <provider.tenants.id contains tenant.id> = 1
+|   |--- class: 1
+|--- <provider.tenants.id contains tenant.id> = 2
+|   |--- class: Empty
+
+rule(HelpdeskOperator; ; Contract; ; provider.tenants.id contains tenant.id; {createOneTimeWorkOrder})
+--------------------------------------------Employee - Contract - createOneTimeWorkOrder
+|--- <employer.id = tenant.id> = 0
+|   |--- class: 0
+|--- <employer.id = tenant.id> = 1
+|   |--- sub<isCustomerSupport in {true}> = 0
+|   |   |--- sub<employer.id in {PP}> = 0
+|   |   |   |--- class: 0
+|   |   |--- sub<employer.id in {PP}> = 1
+|   |   |   |--- sub<position.id in {SalesManager}> = 0
+|   |   |   |   |--- class: 0
+|   |   |   |--- sub<position.id in {SalesManager}> = 1
+|   |   |   |   |--- class: 1
+|   |   |   |--- sub<position.id in {SalesManager}> = 2
+|   |   |   |   |--- class: Empty
+|   |   |--- sub<employer.id in {PP}> = 2
+|   |   |   |--- class: Empty
+|   |--- sub<isCustomerSupport in {true}> = 1
+|   |   |--- class: 1
+|   |--- sub<isCustomerSupport in {true}> = 2
+|   |   |--- class: Empty
+|--- <employer.id = tenant.id> = 2
+|   |--- class: Empty
+
+REMOVAL
+Original Rule: sub<position.id in {SalesManager}>; sub<employer.id in {PP}>; sub<isCustomerSupport in {true}>(!=); <employer.id = tenant.id>; 
+New Rule: sub<position.id in {SalesManager}>; sub<employer.id in {PP}>; <employer.id = tenant.id>; 
+Removed Feature: sub<isCustomerSupport in {true}>(!=)
+
+rule(Employee; position.id in {SalesManager} and employer.id in {PP}; Contract; ; employer.id = tenant.id; {createOneTimeWorkOrder})
+rule(Employee; isCustomerSupport in {true}; Contract; ; employer.id = tenant.id; {createOneTimeWorkOrder})
+--------------------------------------------eWorkforceHelpdeskOp - Contract - createOneTimeWorkOrder
+|--- res<active in {true}> = 0
+|   |--- class: 0
+|--- res<active in {true}> = 1
+|   |--- class: 1
+|--- res<active in {true}> = 2
+|   |--- class: Empty
+
+rule(eWorkforceHelpdeskOp; ; Contract; active in {true}; ; {createOneTimeWorkOrder})
+--------------------------------------------HelpdeskOperator - Contract - createRecurrentWorkOrder
+|--- <provider.tenants.id contains tenant.id> = 0
+|   |--- class: 0
+|--- <provider.tenants.id contains tenant.id> = 1
+|   |--- class: 1
+|--- <provider.tenants.id contains tenant.id> = 2
+|   |--- class: Empty
+
+rule(HelpdeskOperator; ; Contract; ; provider.tenants.id contains tenant.id; {createRecurrentWorkOrder})
+--------------------------------------------Employee - Contract - createRecurrentWorkOrder
+|--- sub<position.id in {SalesManager}> = 0
+|   |--- <employer.id = tenant.id> = 0
+|   |   |--- class: 0
+|   |--- <employer.id = tenant.id> = 1
+|   |   |--- sub<employer.id in {PP}> = 0
+|   |   |   |--- sub<isCustomerSupport in {true}> = 0
+|   |   |   |   |--- class: 0
+|   |   |   |--- sub<isCustomerSupport in {true}> = 1
+|   |   |   |   |--- sub<groups.id contains {ResidentialSupport}> = 0
+|   |   |   |   |   |--- sub<groups.id contains {CompanySupport}> = 0
+|   |   |   |   |   |   |--- class: 0
+|   |   |   |   |   |--- sub<groups.id contains {CompanySupport}> = 1
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |   |   |--- sub<groups.id contains {CompanySupport}> = 2
+|   |   |   |   |   |   |--- class: Empty
+|   |   |   |   |--- sub<groups.id contains {ResidentialSupport}> = 1
+|   |   |   |   |   |--- class: 1
+|   |   |   |   |--- sub<groups.id contains {ResidentialSupport}> = 2
+|   |   |   |   |   |--- class: Empty
+|   |   |   |--- sub<isCustomerSupport in {true}> = 2
+|   |   |   |   |--- class: Empty
+|   |   |--- sub<employer.id in {PP}> = 1
+|   |   |   |--- class: 1
+|   |   |--- sub<employer.id in {PP}> = 2
+|   |   |   |--- class: Empty
+|   |--- <employer.id = tenant.id> = 2
+|   |   |--- class: Empty
+|--- sub<position.id in {SalesManager}> = 1
+|   |--- class: 0
+|--- sub<position.id in {SalesManager}> = 2
+|   |--- class: Empty
+
+REMOVAL
+Original Rule: sub<groups.id contains {CompanySupport}>; sub<groups.id contains {ResidentialSupport}>(!=); sub<isCustomerSupport in {true}>; sub<employer.id in {PP}>(!=); <employer.id = tenant.id>; sub<position.id in {SalesManager}>(!=); 
+New Rule: sub<groups.id contains {CompanySupport}>; sub<isCustomerSupport in {true}>; sub<employer.id in {PP}>(!=); <employer.id = tenant.id>; sub<position.id in {SalesManager}>(!=); 
+Removed Feature: sub<groups.id contains {ResidentialSupport}>(!=)
+
+REMOVAL
+Original Rule: sub<groups.id contains {CompanySupport}>; sub<isCustomerSupport in {true}>; sub<employer.id in {PP}>(!=); <employer.id = tenant.id>; sub<position.id in {SalesManager}>(!=); 
+New Rule: sub<groups.id contains {CompanySupport}>; sub<isCustomerSupport in {true}>; <employer.id = tenant.id>; sub<position.id in {SalesManager}>(!=); 
+Removed Feature: sub<employer.id in {PP}>(!=)
+
+REPLACEMENT
+Original Rule: sub<groups.id contains {CompanySupport}>; sub<isCustomerSupport in {true}>; <employer.id = tenant.id>; sub<position.id in {SalesManager}>(!=); 
+New Rule: <employer.id = tenant.id>; sub<isCustomerSupport in {true}>; sub<groups.id contains {CompanySupport}>; sub<groups.id contains {TechnicianSupport}>; 
+sub<position.id in {SalesManager}>(!=) ==> sub<groups.id contains {TechnicianSupport}>
+
+REMOVAL
+Original Rule: sub<groups.id contains {ResidentialSupport}>; sub<isCustomerSupport in {true}>; sub<employer.id in {PP}>(!=); <employer.id = tenant.id>; sub<position.id in {SalesManager}>(!=); 
+New Rule: sub<groups.id contains {ResidentialSupport}>; sub<isCustomerSupport in {true}>; <employer.id = tenant.id>; sub<position.id in {SalesManager}>(!=); 
+Removed Feature: sub<employer.id in {PP}>(!=)
+
+REPLACEMENT
+Original Rule: sub<groups.id contains {ResidentialSupport}>; sub<isCustomerSupport in {true}>; <employer.id = tenant.id>; sub<position.id in {SalesManager}>(!=); 
+New Rule: <employer.id = tenant.id>; sub<isCustomerSupport in {true}>; sub<groups.id contains {ResidentialSupport}>; sub<groups.id contains {RepairSupportService}>; 
+sub<position.id in {SalesManager}>(!=) ==> sub<groups.id contains {RepairSupportService}>
+
+REPLACEMENT
+Original Rule: sub<employer.id in {PP}>; <employer.id = tenant.id>; sub<position.id in {SalesManager}>(!=); 
+New Rule: <employer.id = tenant.id>; sub<employer.id in {PP}>; sub<position.id in {MaintenanceManager}>; 
+sub<position.id in {SalesManager}>(!=) ==> sub<position.id in {MaintenanceManager}>
+
+rule(Employee; isCustomerSupport in {true} and groups.id contains {CompanySupport} and groups.id contains {TechnicianSupport}; Contract; ; employer.id = tenant.id; {createRecurrentWorkOrder})
+rule(Employee; isCustomerSupport in {true} and groups.id contains {ResidentialSupport} and groups.id contains {RepairSupportService}; Contract; ; employer.id = tenant.id; {createRecurrentWorkOrder})
+rule(Employee; employer.id in {PP} and position.id in {MaintenanceManager}; Contract; ; employer.id = tenant.id; {createRecurrentWorkOrder})
+--------------------------------------------eWorkforceHelpdeskOp - Contract - createRecurrentWorkOrder
+|--- res<active in {true}> = 0
+|   |--- class: 0
+|--- res<active in {true}> = 1
+|   |--- class: 1
+|--- res<active in {true}> = 2
+|   |--- class: Empty
+
+rule(eWorkforceHelpdeskOp; ; Contract; active in {true}; ; {createRecurrentWorkOrder})
+--------------------------------------------Employee - StockRefillNotification - receive
+|--- sub<groups.id contains {TechnicianSupport}> = 0
+|   |--- sub<groups.id contains {Provisioning}> = 0
+|   |   |--- class: 0
+|   |--- sub<groups.id contains {Provisioning}> = 1
+|   |   |--- res<tenant.id in {PP}> = 0
+|   |   |   |--- class: 0
+|   |   |--- res<tenant.id in {PP}> = 1
+|   |   |   |--- class: 1
+|   |   |--- res<tenant.id in {PP}> = 2
+|   |   |   |--- class: Empty
+|   |--- sub<groups.id contains {Provisioning}> = 2
+|   |   |--- class: Empty
+|--- sub<groups.id contains {TechnicianSupport}> = 1
+|   |--- res<tenant.id in {PP}> = 0
+|   |   |--- class: 1
+|   |--- res<tenant.id in {PP}> = 1
+|   |   |--- class: 0
+|   |--- res<tenant.id in {PP}> = 2
+|   |   |--- class: Empty
+|--- sub<groups.id contains {TechnicianSupport}> = 2
+|   |--- class: Empty
+
+REMOVAL
+Original Rule: res<tenant.id in {PP}>; sub<groups.id contains {Provisioning}>; sub<groups.id contains {TechnicianSupport}>(!=); 
+New Rule: res<tenant.id in {PP}>; sub<groups.id contains {Provisioning}>; 
+Removed Feature: sub<groups.id contains {TechnicianSupport}>(!=)
+
+REPLACEMENT
+Original Rule: res<tenant.id in {PP}>(!=); sub<groups.id contains {TechnicianSupport}>; 
+New Rule: sub<groups.id contains {TechnicianSupport}>; res<tenant.id in {Telco}>; 
+res<tenant.id in {PP}>(!=) ==> res<tenant.id in {Telco}>
+
+rule(Employee; groups.id contains {Provisioning}; StockRefillNotification; tenant.id in {PP}; ; {receive})
+rule(Employee; groups.id contains {TechnicianSupport}; StockRefillNotification; tenant.id in {Telco}; ; {receive})
+--------------------------------------------SubcontractorManager - Task - view
+|--- <provider.subcontractors.id supseteq assigned.provider.id> = 0
+|   |--- class: 0
+|--- <provider.subcontractors.id supseteq assigned.provider.id> = 1
+|   |--- class: 1
+|--- <provider.subcontractors.id supseteq assigned.provider.id> = 2
+|   |--- class: Empty
+
+rule(SubcontractorManager; ; Task; ; provider.subcontractors.id supseteq assigned.provider.id; {view})
+--------------------------------------------WorkforceManager - Task - view
+|--- <id in assigned.manager.id> = 0
+|   |--- <provider.subcontractors.id = assigned.provider.id> = 0
+|   |   |--- class: 0
+|   |--- <provider.subcontractors.id = assigned.provider.id> = 1
+|   |   |--- sub<isSenior in {true}> = 0
+|   |   |   |--- class: 0
+|   |   |--- sub<isSenior in {true}> = 1
+|   |   |   |--- sub<dept.id in {dept26}> = 0
+|   |   |   |   |--- class: 1
+|   |   |   |--- sub<dept.id in {dept26}> = 1
+|   |   |   |   |--- class: 0
+|   |   |   |--- sub<dept.id in {dept26}> = 2
+|   |   |   |   |--- class: Empty
+|   |   |--- sub<isSenior in {true}> = 2
+|   |   |   |--- class: Empty
+|   |--- <provider.subcontractors.id = assigned.provider.id> = 2
+|   |   |--- class: Empty
+|--- <id in assigned.manager.id> = 1
+|   |--- res<workOrder.contract.active in {true}> = 0
+|   |   |--- class: 0
+|   |--- res<workOrder.contract.active in {true}> = 1
+|   |   |--- class: 1
+|   |--- res<workOrder.contract.active in {true}> = 2
+|   |   |--- class: Empty
+|--- <id in assigned.manager.id> = 2
+|   |--- class: Empty
+
+REPLACEMENT
+Original Rule: sub<dept.id in {dept26}>(!=); sub<isSenior in {true}>; <provider.subcontractors.id = assigned.provider.id>; <id in assigned.manager.id>(!=); 
+New Rule: <provider.subcontractors.id = assigned.provider.id>; <id in assigned.manager.id>(!=); sub<isSenior in {true}>; res<viewDelegatees.id contains {t-8-1-0-0}>; 
+sub<dept.id in {dept26}>(!=) ==> res<viewDelegatees.id contains {t-8-1-0-0}>
+
+REMOVAL
+Original Rule: <provider.subcontractors.id = assigned.provider.id>; <id in assigned.manager.id>(!=); sub<isSenior in {true}>; res<viewDelegatees.id contains {t-8-1-0-0}>; 
+New Rule: <provider.subcontractors.id = assigned.provider.id>; sub<isSenior in {true}>; res<viewDelegatees.id contains {t-8-1-0-0}>; 
+Removed Feature: <id in assigned.manager.id>(!=)
+
+rule(WorkforceManager; isSenior in {true}; Task; viewDelegatees.id contains {t-8-1-0-0}; provider.subcontractors.id = assigned.provider.id; {view})
+rule(WorkforceManager; ; Task; workOrder.contract.active in {true}; id in assigned.manager.id; {view})
+--------------------------------------------Technician - Task - view
+|--- <id in assigned.id> = 0
+|   |--- class: 0
+|--- <id in assigned.id> = 1
+|   |--- res<workOrder.contract.active in {true}> = 0
+|   |   |--- class: 0
+|   |--- res<workOrder.contract.active in {true}> = 1
+|   |   |--- class: 1
+|   |--- res<workOrder.contract.active in {true}> = 2
+|   |   |--- class: Empty
+|--- <id in assigned.id> = 2
+|   |--- class: Empty
+
+rule(Technician; ; Task; workOrder.contract.active in {true}; id in assigned.id; {view})
+rule(WarehouseManager; ; ResourceRequest; ; ; {view})
+--------------------------------------------WarehouseOperator - ResourceRequest - view
+|--- <id = assigned.id> = 0
+|   |--- class: 0
+|--- <id = assigned.id> = 1
+|   |--- class: 1
+|--- <id = assigned.id> = 2
+|   |--- class: Empty
+
+rule(WarehouseOperator; ; ResourceRequest; ; id = assigned.id; {view})
+--------------------------------------------Technician - Task - complete
+|--- <id in completeDelegatees.id> = 0
+|   |--- <id in assigned.id> = 0
+|   |   |--- class: 0
+|   |--- <id in assigned.id> = 1
+|   |   |--- res<workOrder.contract.active in {true}> = 0
+|   |   |   |--- class: 0
+|   |   |--- res<workOrder.contract.active in {true}> = 1
+|   |   |   |--- class: 1
+|   |   |--- res<workOrder.contract.active in {true}> = 2
+|   |   |   |--- class: Empty
+|   |--- <id in assigned.id> = 2
+|   |   |--- class: Empty
+|--- <id in completeDelegatees.id> = 1
+|   |--- class: 1
+|--- <id in completeDelegatees.id> = 2
+|   |--- class: Empty
+
+REMOVAL
+Original Rule: res<workOrder.contract.active in {true}>; <id in assigned.id>; <id in completeDelegatees.id>(!=); 
+New Rule: res<workOrder.contract.active in {true}>; <id in assigned.id>; 
+Removed Feature: <id in completeDelegatees.id>(!=)
+
+rule(Technician; ; Task; workOrder.contract.active in {true}; id in assigned.id; {complete})
+rule(Technician; ; Task; ; id in completeDelegatees.id; {complete})
+--------------------------------------------WorkforceManager - Task - complete
+|--- <id in assigned.manager.id> = 0
+|   |--- class: 0
+|--- <id in assigned.manager.id> = 1
+|   |--- res<workOrder.contract.active in {true}> = 0
+|   |   |--- class: 0
+|   |--- res<workOrder.contract.active in {true}> = 1
+|   |   |--- class: 1
+|   |--- res<workOrder.contract.active in {true}> = 2
+|   |   |--- class: Empty
+|--- <id in assigned.manager.id> = 2
+|   |--- class: Empty
+
+rule(WorkforceManager; ; Task; workOrder.contract.active in {true}; id in assigned.manager.id; {complete})
+rule(WarehouseManager; ; ResourceRequest; ; ; {complete})
+--------------------------------------------WarehouseOperator - ResourceRequest - complete
+|--- <id = assigned.id> = 0
+|   |--- class: 0
+|--- <id = assigned.id> = 1
+|   |--- class: 1
+|--- <id = assigned.id> = 2
+|   |--- class: Empty
+
+rule(WarehouseOperator; ; ResourceRequest; ; id = assigned.id; {complete})
+--------------------------------------------ApplicationAdmin - OneTimeWorkOrder - remove
+|--- res<isAppointment in {true}> = 0
+|   |--- class: 0
+|--- res<isAppointment in {true}> = 1
+|   |--- class: 1
+|--- res<isAppointment in {true}> = 2
+|   |--- class: Empty
+
+rule(ApplicationAdmin; ; OneTimeWorkOrder; isAppointment in {true}; ; {remove})
+--------------------------------------------ApplicationAdmin - OneTimeWorkOrder - modify
+|--- res<isAppointment in {true}> = 0
+|   |--- class: 0
+|--- res<isAppointment in {true}> = 1
+|   |--- class: 1
+|--- res<isAppointment in {true}> = 2
+|   |--- class: Empty
+
+rule(ApplicationAdmin; ; OneTimeWorkOrder; isAppointment in {true}; ; {modify})
+rule(WarehouseManager; ; Warehouse; ; ; {updateInventory})
+rule(WarehouseManager; ; StockRefillRequest; ; ; {markCompleted})
+rule(HelpdeskOperator; ; Contract; ; provider.tenants.id contains tenant.id; {createOneTimeWorkOrder})
+rule(Employee; position.id in {SalesManager} and employer.id in {PP}; Contract; ; employer.id = tenant.id; {createOneTimeWorkOrder})
+rule(Employee; isCustomerSupport in {true}; Contract; ; employer.id = tenant.id; {createOneTimeWorkOrder})
+rule(eWorkforceHelpdeskOp; ; Contract; active in {true}; ; {createOneTimeWorkOrder})
+rule(HelpdeskOperator; ; Contract; ; provider.tenants.id contains tenant.id; {createRecurrentWorkOrder})
+rule(Employee; isCustomerSupport in {true} and groups.id contains {CompanySupport} and groups.id contains {TechnicianSupport}; Contract; ; employer.id = tenant.id; {createRecurrentWorkOrder})
+rule(Employee; isCustomerSupport in {true} and groups.id contains {ResidentialSupport} and groups.id contains {RepairSupportService}; Contract; ; employer.id = tenant.id; {createRecurrentWorkOrder})
+rule(Employee; employer.id in {PP} and position.id in {MaintenanceManager}; Contract; ; employer.id = tenant.id; {createRecurrentWorkOrder})
+rule(eWorkforceHelpdeskOp; ; Contract; active in {true}; ; {createRecurrentWorkOrder})
+rule(Employee; groups.id contains {Provisioning}; StockRefillNotification; tenant.id in {PP}; ; {receive})
+rule(Employee; groups.id contains {TechnicianSupport}; StockRefillNotification; tenant.id in {Telco}; ; {receive})
+rule(SubcontractorManager; ; Task; ; provider.subcontractors.id supseteq assigned.provider.id; {view})
+rule(WorkforceManager; isSenior in {true}; Task; viewDelegatees.id contains {t-8-1-0-0}; provider.subcontractors.id = assigned.provider.id; {view})
+rule(WorkforceManager; ; Task; workOrder.contract.active in {true}; id in assigned.manager.id; {view})
+rule(Technician; ; Task; workOrder.contract.active in {true}; id in assigned.id; {view})
+rule(WarehouseManager; ; ResourceRequest; ; ; {view})
+rule(WarehouseOperator; ; ResourceRequest; ; id = assigned.id; {view})
+rule(Technician; ; Task; workOrder.contract.active in {true}; id in assigned.id; {complete})
+rule(Technician; ; Task; ; id in completeDelegatees.id; {complete})
+rule(WorkforceManager; ; Task; workOrder.contract.active in {true}; id in assigned.manager.id; {complete})
+rule(WarehouseManager; ; ResourceRequest; ; ; {complete})
+rule(WarehouseOperator; ; ResourceRequest; ; id = assigned.id; {complete})
+rule(ApplicationAdmin; ; OneTimeWorkOrder; isAppointment in {true}; ; {remove})
+rule(ApplicationAdmin; ; OneTimeWorkOrder; isAppointment in {true}; ; {modify})
+rule(WarehouseManager; ; Warehouse; ; ; {updateInventory})
+rule(WarehouseManager; ; StockRefillRequest; ; ; {markCompleted})

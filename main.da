@@ -1,0 +1,128 @@
+import subprocess
+import sys
+import init_workers
+
+class Master(process):
+	
+	def setup(workers, large_job_configs, other_job_configs): pass
+
+	def receive(msg=('DoneJob', output), from_= w): 
+		# !! collect output
+		temp_workers = [workers[0]]
+		output("Received 'DoneJob' from." + str(w) + '\nOutput: ' + str(output))
+
+	def run():
+		# assign jobs to each worker. Assuming that the number of workers
+		# is greater than the number of jobs in large_job_configs.
+
+		# jobs_assign contains list of list of config files' names that 
+		# will run in the worker of the same index in the 'workers' list.
+		jobs_assign = []
+
+
+
+		for j in large_job_configs:
+			jobs_assign.append([j])
+		
+		if len(other_job_configs) != 0:
+			other_jobs_assign = []
+			num_other_jobs = len(other_job_configs)
+			num_other_workers = len(workers) - len(large_job_configs)
+			other_jobs_assign += [[] for i in range(num_other_workers)]
+			
+			pre_list = [range(num_other_workers) if i % 2 == 0 else reversed(range(num_other_workers)) for i in range(int(num_other_jobs / num_other_workers))]
+			assign_list = []
+			for l in pre_list:
+				assign_list.extend(l)
+			assign_list.extend(range(num_other_jobs % num_other_workers) if int(num_other_jobs/num_other_workers) % 2 == 0 else reversed(range(abs(num_other_jobs % num_other_workers - num_other_workers), num_other_workers)))
+
+			for i in range(len(assign_list)):
+				other_jobs_assign[assign_list[i]].append(other_job_configs[i])
+
+			jobs_assign.extend(other_jobs_assign)
+
+		for i, w in enumerate(workers):
+			send(('JobAssign', jobs_assign[i]), to=w)
+		
+		await(len(setof(w, received(('DoneJob', _), from_ = w))) == len(workers))	
+		output("Received outputs from all workers")
+
+class Worker(process):
+	
+	def setup(): pass
+
+	def minePolicies(configs):
+		# this function will execute the batch files to run policy mining
+		# algorithms on the policies in 'configs'.
+		#
+		# it will return the results of the mining algorthim as a dict with:
+		# 	key: config name.
+		#	value: tuple of total average running time and average
+		#		policy syntactic similarity for each policy specified by the
+		#		config name. 
+
+		# run the algorithm.
+		for config in configs:
+			subprocess.run('cd run-exp', shell=True)
+			subprocess.call(['run_' + config + '.bat'])
+		# read the output files and extract the results .
+		results = {}
+		for config in configs:
+			names = config.split('_')
+			policy_name = names[0] + '_10' if 'eWorkforce' in names[0] else 'e-doc_75'
+			scale_f = names[1]
+			output_file_path = './mining-algorithms/output/scaling_f_' + scale_f + '/output_' + policy_name + '.txt'
+			with open(output_file_path, 'r') as f:
+				avg_time, avg_syn_sim = 0.0, 0.0
+				for line in f:
+					if 'Average Policy Syntactic Similarity' in line:
+						avg_syn_sim = float(line.split(': ')[1].split(' ')[0])
+					elif 'Average Running Time to generate learning data' in line:
+						time_str = line.split(': ')[1].strip().split('min, ')
+						avg_time += float(time_str[0].strip()) * 60 + float(time_str[1].split(' ')[0])
+					elif 'Average running time for phase 1' in line:
+						avg_time += float(line.split(': ')[1].strip())
+					elif 'Average time in seconds' in line:
+						avg_time += float(line.split(': ')[1].strip().split(' ')[0])
+				results[config] = (avg_time, avg_syn_sim)
+		return results
+
+	def run():
+		await(some(received(('JobAssign', jobs), from_=master)))
+		output("Received JobAssign: " + str(jobs))
+		# run policy mining method
+		output = minePolicies(jobs)
+		send(('DoneJob', output), to=master)
+  
+def main():
+	# large_job_configs contains names of the config files for large policies 
+	# which should be run on separate Worker nodes. 
+	#
+	# Assuming that the experiments
+	# have more nodes than large policies to run. 
+	large_job_configs = ['eWorkforce_0']#, 'eWorkforce_0'] #['edoc_1', 'edoc_2', 'edoc_3']
+
+	# otherJobConfigs contains all config files' names for the other policies
+	# in the order of decreasing running times.
+	other_job_configs = []# ['eWorkforce_1' , 'eWorkforce_3', 'eWorkforce_2', 'edoc_0', 'eWorkforce_0']
+
+	# create workers
+	num_workers = int(sys.argv[1])
+
+	if len(sys.argv) > 2:
+		if sys.argv[2] == 'cw':
+			init_workers.create_worker_machines(num_workers)
+
+	workers = []
+	for i in range(1, num_workers + 1):
+		node_name = 'Worker' + str(i)
+		worker = new(Worker, args=(), at=node_name)
+		workers.append(next(iter(worker)))
+
+	# create master
+	master = new(Master, args=(workers, large_job_configs, other_job_configs))
+
+	# run workers and master
+	for worker in workers:
+		start(worker)
+	start(master)

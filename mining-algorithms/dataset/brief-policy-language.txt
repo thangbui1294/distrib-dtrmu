@@ -1,0 +1,78 @@
+RELATIONAL ACCESS CONTROL: POLICY LANGUAGE
+
+------------------------------------------------------------
+------------------------------------------------------------
+POLICY LANGUAGE
+
+This file presents the concrete syntax of ORAL2 and ORAL2- ReBAC policy languages.
+A policy is a tuple <CM, OM, Act, Rules> where CM is a class model, OM is an object model, Act is a set of actions, and Rules is a set of rules.
+
+------------------------------------------------------------
+CLASS MODEL
+
+a class model is a set of class declarations.  a class declaration is a tuple of the form <className; parent; fields> where parent is a class name or the empty string (indicating that the class does not have a parent), and fields is a set of field declarations.  a field declaration is a tuple <fieldName, type, multiplicity>, where type is a classname or Boolean, and multiplicity is optional, one, or many.  multiplicity optional, also denoted "?", means "0 or 1".  multiplicity many, also denoted "*", means "any natural number".  multiplicity one, also denoted "1", means exactly one.  every class implicitly contains a field "id" with type String.  
+
+in data files, we use the concrete syntax
+
+class(className; parent; field1:type1; field2:type2; ...)
+
+where (although not shown above) a ? or * is appended to the types of fields with those multiplicities, and other fields implicitly have multiplicity 1.  for example, 
+
+class(Patient; ; physician:Physician; consultations:Consultation*; spouse:User?)
+
+NOTE
+
+classes are also called "reference types", because values of these types are object references.
+
+multiplicities are specified only for fields with reference type.  fields with boolean type implicitly have multiplicity 1.
+
+the implicit field "id" implicity has type String.  no other field has type String.
+
+a parent class must be defined before its children.  a class can be used as a field type before it is defined.
+
+the class model must appear first, before the rules and object model.
+the last line of the class model must be followed by the line "# End Of Class Definition".
+
+------------------------------------------------------------
+OBJECT MODEL
+
+conceptually, an object model is an instance of a class model.  an object model is a set of objects whose types are consistent with a specified class model.  each object is a tuple <className, fieldData> where fieldData is a set of pairs of the form <fieldName, value>.  fieldData should contain an entry for each field of the specified class, including the implicit field "id" and inherited fields.
+
+in data files, we use the concrete syntax
+
+object(className; field1 = value1; field2 = value2; ...)
+
+where field1 is always "id"
+
+the value of a field whose type is a class C should be a string that is the identifier of an object with type C. The value of any field can also be the sepcial value "unknown", indicating that the actual value is unknown (missing). 
+ 
+the value of a field with multiplicity * should be a set, possibly the empty set (denoted as "null").  the value of a field with multiplicity ? should be a single value or "null" (indicating no value). Note that the "null" value is called "None" in the paper. 
+
+------------------------------------------------------------
+RULE LANGUAGE
+
+CONDITIONS
+
+An atomic condition is a tuple <path, op, constant>, where path is a non-empty sequence of attribute selectors, and op is an operator, either "in" or "contains".
+
+in examples, we use "=" as syntactic sugar for "in" when the constant is a singleton set; in other words, we write v.path in {c} as v.path = c.
+
+A negative atomic condition is the negation of an atomic condition, e.g., NOT(v.path = c). A negative atomic condition has the suffix "(!=)".  
+
+A condition is a set (interpreted as a conjunction) of atomic conditions or their negations.
+
+CONSTRAINTS
+
+An atomic constraint is a tuple <path, op, path>, where op is an operator in {=, in, contains, supseteq, subseteq}.  the "contains" operator, denoted $\ni$, is the transpose of the set membership operator $\in$.
+
+A negative atomic constraint is the negation of an atomic constraint. A negative atomic constraint has the suffix "(!=)". 
+
+A constraint is a conjunction of atomic constraints or their negations.
+
+RULES
+
+A rule is a tuple of the form 
+
+<subjectType, subjectCondition, resourceType, resourceCondition, constraint, actions>,
+
+where subjectType and resourceType are class names, subjectCondition and resourceCondition are conditions, constraint is a constraint, and actions is a set of actions.  implicitly, the path in subjectCondition starts from the subject, the path in resourceCondition starts from the resource, and the paths in the constraint start from the subject and resource, respectively.
