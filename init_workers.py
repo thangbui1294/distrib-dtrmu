@@ -26,16 +26,17 @@ Content-Disposition: attachment; filename="userdata.txt"
 \n"""
 		
 		bashOnRun = "\n".join(["#!/bin/bash",
-			"sudo yum -y install python3", 
-			"sudo yum -y install git", 
+			"sudo yum update -y",
+			"sudo yum -y install python37 -y", 
+			"sudo yum -y install git -y", 
+			"sudo yum install java-1.8.0-openjdk -y",
+			"sudo yum install java-1.8.0-openjdk-devel -y",
 			"cd /home/ec2-user", 
-			"mkdir da", 
-			"cd da",
-			"git clone https://github.com/DistAlgo/distalgo.git ", 
-			"cd /home/ec2-user", 
-			"git clone https://github.com/unicomputing/scaling-performance.git da-project",
-			"chmod 777 /home/ec2-user/da-project/run-node.bash", 
-			"sh /home/ec2-user/da-project/run-node.bash {}".format(nodeName)])
+			"git clone https://github.com/thangbui1294/distrib-dtrmu.git", 
+			"chmod 777 /home/ec2-user/distrib-dtrmu/run-node.bash", 
+			"export PYTHONPATH=\"/home/ec2-user/distrib-dtrmu/distalgo-master\":${PYTHONPATH}",
+			#"sh /home/ec2-user/da-project/run-node.bash {}".format(nodeName)
+			])
 	
 		f.write(headPart + bashOnRun)
 
@@ -69,7 +70,7 @@ def create_worker_machines(num_workers):
 			"--region us-east-1",
 			# "--tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=" + nodeName + "},{Key=type,Value=BatchGen}]'", 
 			# "--tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=" + nodeName + "}]'", 
-			#f"--user-data file://{bashFileName}"])
+			f"--user-data file://{bashFileName}"
 			])
 		# print(bashCommand)
 		process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
