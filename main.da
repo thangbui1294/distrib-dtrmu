@@ -113,10 +113,19 @@ def main():
 		if sys.argv[2] == 'cw':
 			init_workers.create_worker_machines(num_workers)
 
+	node_addr_file =  "/home/ec2-user/distrib-dtrmu/newDaAddr.config"
+
+	node_addrs = None
+	with open(node_addr_file, "r") as f:
+		node_addrs_str = f.read()
+		node_addrs = node_addrs_str.split("\n")
+	node_addrs = [addr for addr in node_addrs if addr != ""]
+	assert len(node_addrs) > 0, "there must be at least one node (in the format NodeName@IP-Address)"
+
+
 	workers = []
-	for i in range(1, num_workers + 1):
-		node_name = 'Worker' + str(i)
-		worker = new(Worker, args=(), at=node_name)
+	for i in range(len(node_addrs)):
+		worker = new(Worker, args=(), at=node_addrs[i])
 		workers.append(next(iter(worker)))
 
 	# create master
