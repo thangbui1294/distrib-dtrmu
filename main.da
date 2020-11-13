@@ -125,9 +125,10 @@ def main():
 
 	workers = []
 	for i in range(len(node_addrs)):
+		print('Initialze Worker' + str(i))
 		worker = new(Worker, args=(), at=node_addrs[i])
 		workers.append(next(iter(worker)))
-
+	print('Done creating workers')
 	# create master
 	master = new(Master, args=(workers, large_job_configs, other_job_configs))
 

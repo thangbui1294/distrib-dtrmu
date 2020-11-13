@@ -1,5 +1,4 @@
 #!/bin/bash
-sudo yum update -y
 sudo yum install python37 -y
 sudo yum install java-1.8.0-openjdk -y
 sudo yum install java-1.8.0-openjdk-devel -y
