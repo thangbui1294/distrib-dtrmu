@@ -64,7 +64,7 @@ class Worker(process):
 		# run the algorithm.
 		for config in configs:
 			subprocess.run('cd run-exp', shell=True)
-			subprocess.call(['run_' + config + '.bat'])
+			subprocess.call(['run_' + config + '.bash'])
 		# read the output files and extract the results .
 		results = {}
 		for config in configs:
@@ -124,8 +124,8 @@ def main():
 
 
 	workers = []
-	for i in range(1, len(node_addrs) + 1):
-		print('Initialze Worker' + str(i))
+	for i in range(len(node_addrs)):
+		print('Initialze Worker: ' + node_addrs[i])
 		worker = new(Worker, args=(), at=node_addrs[i])
 		workers.append(next(iter(worker)))
 	print('Done creating workers')

@@ -33,8 +33,16 @@ Content-Disposition: attachment; filename="userdata.txt"
 			"sudo yum install java-1.8.0-openjdk-devel -y",
 			"cd /home/ec2-user", 
 			"git clone https://github.com/thangbui1294/distrib-dtrmu.git", 
-			"chmod 777 /home/ec2-user/distrib-dtrmu/run-node.bash", 
-			"sh /home/ec2-user/distrib-dtrmu/run-node.bash {}".format(nodeName)
+			"sudo chmod 777 /home/ec2-user/distrib-dtrmu/run-node.bash", 
+			"cd distrib-dtrmu/mining-algorithms/learning-data-generator",
+			"cd src",
+			"javac -cp \"../libs/commons-lang3-3.4.jar.\" -d ../bin ./*.java",
+			"cd ../../improve-policy",
+			"cd src",
+			"javac -cp \"../libs/commons-math-2.2.jar;../libs/commons-lang3-3.4.jar;../libs/commons-math3-3.3.jar;../libs/jdi.jar.\" -d ../bin algo/*.java util/*.java",
+			"cd /home/ec2-user/distrib-dtrmu",
+			"sudo chmod -R 777 run-exp"
+			#"sh /home/ec2-user/distrib-dtrmu/run-node.bash {}".format(nodeName)
 			])
 	
 		f.write(headPart + bashOnRun)
