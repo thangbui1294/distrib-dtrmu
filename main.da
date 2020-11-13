@@ -120,11 +120,11 @@ def main():
 		node_addrs_str = f.read()
 		node_addrs = node_addrs_str.split("\n")
 	node_addrs = [addr for addr in node_addrs if addr != ""]
-	assert len(node_addrs) > 0, "there must be at least one node (in the format NodeName@IP-Address)"
+	assert len(node_addrs) == num_workers, "not enough workers"
 
 
 	workers = []
-	for i in range(len(node_addrs)):
+	for i in range(1, len(node_addrs) + 1):
 		print('Initialze Worker' + str(i))
 		worker = new(Worker, args=(), at=node_addrs[i])
 		workers.append(next(iter(worker)))
