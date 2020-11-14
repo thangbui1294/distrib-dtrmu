@@ -99,7 +99,7 @@ def main():
 	#
 	# Assuming that the experiments
 	# have more nodes than large policies to run. 
-	large_job_configs = ['eWorkforce_0']#, 'eWorkforce_0'] #['edoc_1', 'edoc_2', 'edoc_3']
+	large_job_configs = ['eWorkforce_0', 'eWorkforce_0'] #['edoc_1', 'edoc_2', 'edoc_3']
 
 	# otherJobConfigs contains all config files' names for the other policies
 	# in the order of decreasing running times.
