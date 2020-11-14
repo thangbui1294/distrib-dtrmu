@@ -44,7 +44,7 @@ Content-Disposition: attachment; filename="userdata.txt"
 			"cd /home/ec2-user/distrib-dtrmu",
 			"sudo chmod -R 777 run-exp",
 			"sudo chmod -R 777 mining-algorithms"
-			#"sh /home/ec2-user/distrib-dtrmu/run-node.bash {}".format(nodeName)
+			"sh /home/ec2-user/distrib-dtrmu/run-node.bash {}".format(nodeName)
 			])
 	
 		f.write(headPart + bashOnRun)
