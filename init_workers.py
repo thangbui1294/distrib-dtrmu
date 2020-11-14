@@ -43,7 +43,7 @@ Content-Disposition: attachment; filename="userdata.txt"
 			"javac -cp \"../libs/commons-math-2.2.jar:../libs/commons-lang3-3.4.jar:../libs/commons-math3-3.3.jar:../libs/jdi.jar;\" -d ../bin algo/*.java util/*.java",
 			"cd /home/ec2-user/distrib-dtrmu",
 			"sudo chmod -R 777 run-exp",
-			"sudo chmod -R 777 mining-algorithms"
+			"sudo chmod -R 777 mining-algorithms",
 			"sh /home/ec2-user/distrib-dtrmu/run-node.bash {}".format(nodeName)
 			])
 	
@@ -94,6 +94,6 @@ def create_worker_machines(num_workers):
 
 		with open("./newDaAddr.config", "a") as f:
 			f.write(daAddr + "\n")
-	waitingTime = 120
+	waitingTime = 150
 	print(f"Waiting {waitingTime} seconds for the worker machines initialization")
 	time.sleep(waitingTime)
