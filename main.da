@@ -63,8 +63,7 @@ class Worker(process):
 
 		# run the algorithm.
 		for config in configs:
-			subprocess.run('cd /home/ec2-user/distrib-dtrmu/run-exp', shell=True)
-			subprocess.call(['./run_' + config + '.bash'])
+			subprocess.run('sh /home/ec2-user/distrib-dtrmu/run-exp/run_' + str(config) + '.bash', shell=True)
 		# read the output files and extract the results .
 		results = {}
 		for config in configs:

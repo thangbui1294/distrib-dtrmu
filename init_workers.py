@@ -42,7 +42,8 @@ Content-Disposition: attachment; filename="userdata.txt"
 			"cd src",
 			"javac -cp \"../libs/commons-math-2.2.jar:../libs/commons-lang3-3.4.jar:../libs/commons-math3-3.3.jar:../libs/jdi.jar;\" -d ../bin algo/*.java util/*.java",
 			"cd /home/ec2-user/distrib-dtrmu",
-			"sudo chmod -R 777 run-exp"
+			"sudo chmod -R 777 run-exp",
+			"sudo chmod -R 777 mining-algorithms"
 			#"sh /home/ec2-user/distrib-dtrmu/run-node.bash {}".format(nodeName)
 			])
 	
