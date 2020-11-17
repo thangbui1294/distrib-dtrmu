@@ -104,6 +104,6 @@ def create_worker_machines(num_vms, num_workers_per_vm):
 		with open("./newDaAddr.config", "a") as f:
 			for daAddr in daAddrs:
 				f.write(daAddr + "\n")
-	waitingTime = 150
+	waitingTime = 300
 	print(f"Waiting {waitingTime} seconds for the worker machines initialization")
 	time.sleep(waitingTime)

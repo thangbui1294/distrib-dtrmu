@@ -3302,6 +3302,10 @@ public class ReBACMiner {
             // read numPoliciesPerSize
             int numPoliciesPerSize = Integer.parseInt(inputProperties.getProperty("numPoliciesPerSize"));
             config.setNumPoliciesPerSize(numPoliciesPerSize);
+			
+			// read runPolicy
+            int runPolicy = Integer.parseInt(inputProperties.getProperty("runPolicy"));
+            config.setRunPolicy(runPolicy);
             
             // read isOneConditionPerPathRestricted
             String isOneConditionPerPathRestricted = inputProperties.getProperty("isOneConditionPerPathRestricted");
