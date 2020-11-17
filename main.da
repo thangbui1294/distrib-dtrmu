@@ -20,7 +20,8 @@ class Master(process):
 		self.num_done_jobs += 1
 		if len(self.remain_jobs) != 0:
 			send(('JobAssign', self.remain_jobs.pop(0)), to=w)
-
+		else:
+			send(('Done', ), to=w)
 	def run():
 		begin_elapsed_time = time.time()
 		begin_cpu_time = time.process_time()
@@ -29,23 +30,50 @@ class Master(process):
 			send(('JobAssign', remain_jobs.pop(0)), to=self.workers.pop(0))
 		
 		await(self.num_done_jobs == self.num_jobs)	
+
+		output("Received outputs from all workers\nResults: " + str(self.results))
+
 		elapsed_time = time.time() - begin_elapsed_time
 		cpu_time = time.process_time() - begin_cpu_time
-		with open('./output_results.txt', 'a') as f_out:
-			f_out.write('============================================\nElapsed time at master node: ' + str(elapsed_time) + ' sec\n')
-			f_out.write('============================================\nTotal CPU time at master node: ' + str(cpu_time) + ' sec\n')
-		output("Received outputs from all workers\nResults: " + str(self.results))
-		output_results_file =  "/home/ec2-user/run-exp/results.txt"
+		# compute times from workers process
+		total_workers_elapsed_time = 0
+		total_workers_cpu_time = 0
+		total_mining_elapsed_time = 0
+		total_mining_cpu_time = 0
+
+		output_results_file =  "/home/ec2-user/distrib-dtrmu/run-exp/results.txt"
 		with open(output_results_file, 'w') as out_f:
 			for worker in self.results:
-				out_f.write('==================================\n' + woker + '\n--------------------\n')
+				out_f.write('============================================\n' + woker + '\n--------------------\n')
 				for job in self.results[worker]:
 					out_f.write(job + ': ' + str(self.results[worker][job]) + '\n')
+					total_workers_elapsed_time += results[worker][job][4]
+					total_workers_cpu_time += results[worker][job][3]
+					total_mining_elapsed_time += results[worker][job][2]
+					total_mining_cpu_time += results[worker][job][1]
 				out_f.write('\n\n')
+			out_f.write('============================================\nElapsed time at master node: ' + str(elapsed_time) + ' sec\n')
+			out_f.write('============================================\nCPU time at master node: ' + str(cpu_time) + ' sec\n')
+			out_f.write('============================================\nTotal CPU time at worker nodes: ' + str(total_workers_cpu_time) + ' sec\n')
+			out_f.write('============================================\nTotal CPU time for mining policies worker nodes: ' + str(total_mining_cpu_time) + ' sec\n')
+			out_f.write('============================================\nTotal elapsed time at worker nodes: ' + str(total_workers_elapsed_time) + ' sec\n')
+			out_f.write('============================================\nTotal elapsed time for mining policies at worker nodes: ' + str(total_mining_elapsed_time) + ' sec\n')
+			out_f.write('============================================\nSpeed up on elapsed time: ' + str(total_mining_elapsed_time/elapsed_time) + '\n')
 
 class Worker(process):
 	
 	def setup(): pass
+
+	def receive(msg=('JobAssign', job), from_= master): 
+		begin_cpu_time = time.process_time()
+		begin_elasped_time = time.time()
+		output("Received JobAssign: " + str(job))
+		# run policy mining method
+		output = minePolicies(job)
+		output.append(time.process_time() - begin_cpu_time)
+		output.append(time.time() - begin_elasped_time)
+		results = (job, output)
+		send(('DoneJob', results), to=master)
 
 	def minePolicies(config):
 		begin_elapsed_mining_time = time.time()
@@ -58,7 +86,7 @@ class Worker(process):
 		names = config.split('_')
 		policy_name = names[0] + '_10' if 'eWorkforce' in names[0] else 'e-doc_75'
 		scale_f = names[1]
-		output_file_path = './mining-algorithms/output/scaling_f_' + scale_f + '/output_' + policy_name + '.txt'
+		output_file_path = './mining-algorithms/output/scaling_f_' + scale_f + '/output_' + policy_name + '_' + names[2] '.txt'
 
 		# compute average cpu time and average syntactic similarity from output file
 		avg_time, avg_syn_sim = 0.0, 0.0
@@ -74,18 +102,12 @@ class Worker(process):
 				elif 'Average time in seconds' in line:
 					avg_time += float(line.split(': ')[1].strip().split(' ')[0])
 		
-		return [avg_time, avg_syn_sim, elapsed_mining_time]
+		return [avg_syn_sim, avg_time , elapsed_mining_time]
 
 
 	def run():
-		await(some(received(('JobAssign', job), from_=master)))
-		begin_cpu_time = time.process_time()
-		output("Received JobAssign: " + str(job))
-		# run policy mining method
-		output = minePolicies(job)
-		output.append(time.process_time() - begin_cpu_time)
-		results = (job, output)
-		send(('DoneJob', results), to=master)
+		await(some(received(('Done',), from_=master)))
+		
   
 def main():
 	# read list of configs from file

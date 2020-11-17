@@ -92,8 +92,15 @@ public class LearningDataGenerator {
                             TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(averageRunningTimeMillis))
             );
             System.out.println("Average Running Time for " + config.getPolicyName() + "_" + size + ": " + runningTime);
-			String timeOutputFile = config.getOutputTimePath() + "/output_" + config.getPolicyName()
+			String timeOutputFile = "";
+			if (policyNum == 1){
+				timeOutputFile = config.getOutputTimePath() + "/output_" + config.getPolicyName()
+                        + "_" + size + "_" + j + ".txt";
+			}
+			else{
+				timeOutputFile = config.getOutputTimePath() + "/output_" + config.getPolicyName()
                         + "_" + size + ".txt";
+			}
 			try{
 				FileWriter timeFileWrt = new FileWriter(timeOutputFile);
 				BufferedWriter timeWriter = new BufferedWriter(timeFileWrt);
