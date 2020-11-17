@@ -19,7 +19,9 @@ class Master(process):
 		output("Received 'DoneJob' from " + str(w) + '\nOutput: ' + str(output))
 		self.num_done_jobs += 1
 		if len(self.remain_jobs) != 0:
-			send(('JobAssign', self.remain_jobs.pop(0)), to=w)
+			next_job = self.remain_jobs.pop(0)
+			send(('JobAssign', ), to=w)
+			output("Send job " + next_job + ' to ' + str(w))
 		else:
 			send(('Done', ), to=w)
 	def run():
@@ -27,7 +29,10 @@ class Master(process):
 		begin_cpu_time = time.process_time()
 
 		while (len(self.workers) != 0 and len(self.remain_jobs) != 0):
-			send(('JobAssign', remain_jobs.pop(0)), to=self.workers.pop(0))
+			next_job = self.remain_jobs.pop(0)
+			next_worker = self.workers.pop(0)
+			send(('JobAssign', next_job), to=next_worker)
+			output("Send job " + next_job + ' to ' + str(next_worker))
 		
 		await(self.num_done_jobs == self.num_jobs)	
 
