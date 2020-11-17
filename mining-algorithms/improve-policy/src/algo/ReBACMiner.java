@@ -4126,7 +4126,7 @@ public class ReBACMiner {
             double[][] statsInfo = new double[13][policySize];
             long totalTime = 0;
             new File(config.getOutputPath() + config.getPolicyName() + "_" + size + "/").mkdir();
-			int[] runPolicies = new int[policyNum];
+			int[] runPolicies = new int[policySize];
 			if (policySize == 1){
 				runPolicies[0] = config.getRunPolicy();
 			}
