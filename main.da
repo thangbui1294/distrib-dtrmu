@@ -44,7 +44,7 @@ class Master(process):
 		output_results_file =  "/home/ec2-user/distrib-dtrmu/run-exp/results.txt"
 		with open(output_results_file, 'w') as out_f:
 			for worker in self.results:
-				out_f.write('============================================\n' + woker + '\n--------------------\n')
+				out_f.write('============================================\n' + worker + '\n--------------------\n')
 				for job in self.results[worker]:
 					out_f.write(job + ': ' + str(self.results[worker][job]) + '\n')
 					total_workers_elapsed_time += results[worker][job][4]
