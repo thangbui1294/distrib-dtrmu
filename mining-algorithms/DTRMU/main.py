@@ -36,6 +36,8 @@ for line in config_f:
         policy_name = line.strip().split('=')[1]
     elif 'num_policies' in line:
         num_policy = int(line.strip().split('=')[1])
+    elif 'run_policy' in line:
+        run_policy = int(line.strip().split('=')[1])
     elif 'data_path' in line:
         data_path = line.strip().split('=')[1]
     elif 'mining_with_negation' in line:
@@ -59,7 +61,13 @@ utilities.reset_times()
 total_building_tree_time = []
 total_eliminating_unknown_time = []
 total_eliminating_neg_time = []
-for i in range(0, num_policy):
+run_policies = []
+if num_policy > 1:
+    for i in range(num_policy):
+        run_policies.append(i)
+else:
+    run_policies.append(run_policy)
+for i in run_policies:
     time_start = process_time()
     building_tree_time = 0
     eliminating_unknown_time = 0

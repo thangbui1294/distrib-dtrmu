@@ -82,7 +82,7 @@ class Worker(process):
 		begin_cpu_time = time.process_time()
 		output("Received JobAssign: " + str(job))
 		# run policy mining method
-		output = minePolicies(jobs)
+		output = minePolicies(job)
 		output.append(time.process_time() - begin_cpu_time)
 		results = (job, output)
 		send(('DoneJob', results), to=master)

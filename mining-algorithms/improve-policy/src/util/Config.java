@@ -79,6 +79,7 @@ public class Config{
     private boolean compareOriginalInputRule;
     private int[] policySize;
     private int numPoliciesPerSize;
+	private int runPolicy;
     private String policyName;
     private String attributeDataPath;
     private String minedRulesFromDTPath;
@@ -448,6 +449,14 @@ public class Config{
     
     public void setNumPoliciesPerSize(int param){
         this.numPoliciesPerSize = param;
+    }
+	
+	public int getRunPolicy(){
+        return this.runPolicy;
+    }
+    
+    public void setRunPolicy(int param){
+        this.runPolicy = param;
     }
     
     public String getPolicyName(){

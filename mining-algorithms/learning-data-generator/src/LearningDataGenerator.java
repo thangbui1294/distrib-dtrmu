@@ -60,7 +60,16 @@ public class LearningDataGenerator {
         for (int i = 0; i < sizes.length; i++){
             int size = sizes[i];
             long startCPUTime = Time.getCpuTime();
-            for (int j = 0; j < policyNum; j++) {
+			int[] runPolicies = new int[policyNum];
+			if (policyNum == 1){
+				runPolicies[0] = config.getRunPolicy();
+			}
+			else{
+				for (int j = 0; j < policyNum; j++){
+					runPolicies[j] = j;
+				}
+			}
+            for (int j:runPolicies) {
                 String outputPath = config.getOutputPath() + "/" + config.getPolicyName()
                         + "_" + size + "/" + config.getPolicyName()
                         + "_" + size + "_" + j + "/";
@@ -1234,6 +1243,10 @@ public class LearningDataGenerator {
             // read numPoliciesPerSize
             int numPoliciesPerSize = Integer.parseInt(inputProperties.getProperty("numPoliciesPerSize"));
             config.setNumPoliciesPerSize(numPoliciesPerSize);
+			
+			// read runPolicy
+            int runPolicy = Integer.parseInt(inputProperties.getProperty("runPolicy"));
+            config.setRunPolicy(runPolicy);
             
             // read policyName
             String policyName = inputProperties.getProperty("policyName");

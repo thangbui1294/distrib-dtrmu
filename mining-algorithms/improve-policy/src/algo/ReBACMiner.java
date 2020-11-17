@@ -4126,7 +4126,16 @@ public class ReBACMiner {
             double[][] statsInfo = new double[13][policySize];
             long totalTime = 0;
             new File(config.getOutputPath() + config.getPolicyName() + "_" + size + "/").mkdir();
-            for (int j = 0 ; j < policySize; j++){
+			int[] runPolicies = new int[policyNum];
+			if (policySize == 1){
+				runPolicies[0] = config.getRunPolicy();
+			}
+			else{
+				for (int j = 0; j < policySize; j++){
+					runPolicies[j] = j;
+				}
+			}
+            for (int j : runPolicies){
                 Pair<Long, double[]> resultStats = runOneDecisionTreeExperiment(config, configFile, size, j, config.getOutputPath() + config.getPolicyName() + "_" + size + "/" + config.getPolicyName() + "_" + size + "_" + j + ".output");
                 for (int k = 0; k < statsInfo.length - 1; k++){
                     statsInfo[k][j] += resultStats.getSecond()[k];
