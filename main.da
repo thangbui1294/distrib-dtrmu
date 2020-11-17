@@ -86,7 +86,7 @@ class Worker(process):
 		names = config.split('_')
 		policy_name = names[0] + '_10' if 'eWorkforce' in names[0] else 'e-doc_75'
 		scale_f = names[1]
-		output_file_path = './mining-algorithms/output/scaling_f_' + scale_f + '/output_' + policy_name + '_' + names[2] '.txt'
+		output_file_path = './mining-algorithms/output/scaling_f_' + scale_f + '/output_' + policy_name + '_' + names[2] + '.txt'
 
 		# compute average cpu time and average syntactic similarity from output file
 		avg_time, avg_syn_sim = 0.0, 0.0

@@ -95,7 +95,7 @@ public class LearningDataGenerator {
 			String timeOutputFile = "";
 			if (policyNum == 1){
 				timeOutputFile = config.getOutputTimePath() + "/output_" + config.getPolicyName()
-                        + "_" + size + "_" + j + ".txt";
+                        + "_" + size + "_" + config.getRunPolicy() + ".txt";
 			}
 			else{
 				timeOutputFile = config.getOutputTimePath() + "/output_" + config.getPolicyName()
