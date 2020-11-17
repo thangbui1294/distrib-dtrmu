@@ -3,7 +3,7 @@ import json
 import time
 
 
-def writeAwsRunInstFile(nodeName: str, fileName: str):
+def writeAwsRunInstFile(processNames: str, fileName: str):
 	with open(fileName, 'w') as f:
 		headPart = """Content-Type: multipart/mixed; boundary="//"
 MIME-Version: 1.0
@@ -24,7 +24,9 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: attachment; filename="userdata.txt"
 \n"""
-		
+		start_processes = ""
+		for p_name in process_names:
+			start_processes += '\"python3 -m da -n ' + p_name + ' -D main.da\" '
 		bashOnRun = "\n".join(["#!/bin/bash",
 			"sudo yum update -y",
 			"sudo yum -y install python37 -y",
@@ -44,7 +46,7 @@ Content-Disposition: attachment; filename="userdata.txt"
 			"cd /home/ec2-user/distrib-dtrmu",
 			"sudo chmod -R 777 run-exp",
 			"sudo chmod -R 777 mining-algorithms",
-			"sh /home/ec2-user/distrib-dtrmu/run-node.bash {}".format(nodeName)
+			#"sh /home/ec2-user/distrib-dtrmu/run-workers.bash {}".format(start_processes)
 			])
 	
 		f.write(headPart + bashOnRun)
@@ -56,13 +58,16 @@ def parseNewInstFeedbackToIp(outputMsg: str):
     return ipAddr
 
 		
-def create_worker_machines(num_workers):
+def create_worker_machines(num_vms, num_workers_per_vm):
 	AWS_IMAGE_ID = "ami-0947d2ba12ee1ff75" 
 	
-	for i in range(1, num_workers + 1):
-		bashFileName = f"./inst-bash/Worker-{i}.bash"
-		nodeName = f"Worker{i}"
-		writeAwsRunInstFile(nodeName, bashFileName)
+	for i in range(num_vms):
+		bashFileName = f"./inst-bash/VM-{i}.bash"
+		process_names = []
+		for j in range(num_workers_per_vm):
+			node_id = i * len(num_workers_per_vm) + j + 1
+			process_names.append(f"Worker{node_id}")
+		writeAwsRunInstFile(process_names, bashFileName)
 
 		# bashCommand = f"chmod 777 {bashFileName}"
 		# process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
@@ -72,7 +77,7 @@ def create_worker_machines(num_workers):
 			"aws ec2 run-instances", 
 			f"--image-id {AWS_IMAGE_ID}",
 			"--count 1",
-			"--instance-type t2.xlarge",
+			"--instance-type t2.large",
 			"--key-name thang_vm",
 			"--subnet-id subnet-11a9da1f",
 			"--security-group-ids sg-04347234995eecedf",
@@ -89,11 +94,16 @@ def create_worker_machines(num_workers):
 			print(errorMsg)
 
 		ipAddr = parseNewInstFeedbackToIp(outputMsg)
-		daAddr = f"{nodeName}@{ipAddr}"
-		print(daAddr)
+		daAddrs = []
+		for j in range(num_workers_per_vm):
+			node_id = i * len(num_workers_per_vm) + j + 1
+			node_name = f"Worker{node_id}"
+			daAddrs.append(f"{nodeName}@{ipAddr}")
+		print(daAddrs)
 
 		with open("./newDaAddr.config", "a") as f:
-			f.write(daAddr + "\n")
+			for daAddr in daAddrs:
+				f.write(daAddr + "\n")
 	waitingTime = 150
 	print(f"Waiting {waitingTime} seconds for the worker machines initialization")
 	time.sleep(waitingTime)
