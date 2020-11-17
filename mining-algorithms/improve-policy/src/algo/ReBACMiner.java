@@ -4142,184 +4142,217 @@ public class ReBACMiner {
             for (int j : runPolicies){
                 Pair<Long, double[]> resultStats = runOneDecisionTreeExperiment(config, configFile, size, j, config.getOutputPath() + config.getPolicyName() + "_" + size + "/" + config.getPolicyName() + "_" + size + "_" + j + ".output");
                 for (int k = 0; k < statsInfo.length - 1; k++){
-                    statsInfo[k][j] += resultStats.getSecond()[k];
+					if (policySize == 1){
+						statsInfo[k][0] += resultStats.getSecond()[k];
+					}
+					else{
+						statsInfo[k][j] += resultStats.getSecond()[k];
+					}
                 }
-                statsInfo[12][j] = resultStats.getFirst();
+				if (policySize == 1){
+					statsInfo[12][0] = resultStats.getFirst();
+				}
+				else{
+					statsInfo[12][j] = resultStats.getFirst();
+				}
                 totalTime += resultStats.getFirst();
                 System.out.println("FINISH RUNNING EXPERIMENT WITH: " + config.getPolicyName() + "_" + size + "_" + j);
             }
-            // calculate the average and sd of the stats
-            double minedWSCAvg = 0;
-            double minedWSCSd = 0;
-            double simplifiedInputWSCAvg = 0;
-            double simplifiedInputWSCSd = 0;
-            double simplifiedSynSimilarAvg = 0;
-            double simplifiedSynSimilarSd = 0;
-            double simplifiedSemSimilarAvg = 0;
-            double simplifiedSemSimilarSd = 0;
-            double simplifiedSameFracAvg = 0;
-            double simplifiedSameFracSd = 0;
-            
-            double originalInputWSCAvg = 0;
-            double originalInputWSCSd = 0;
-            double originalSynSimilarAvg = 0;
-            double originalSynSimilarSd = 0;
-            double originalSemSimilarAvg = 0;
-            double originalSemSimilarSd = 0;
-            double originalSameFracAvg = 0;
-            double originalSameFracSd = 0;
-            
-            double tupleSizeAvg = 0;
-            double tupleSizeSd = 0;
-            double objectSizeAvg = 0;
-            double objectSizeSd = 0;
-            double fieldNumAvg = 0;
-            double fieldNumSd = 0;
-            
-            double timeAvg = 0;
-            double timeSd = 0;
-            
-            for (int j = 0; j < policySize; j++){
-                minedWSCAvg += statsInfo[0][j];
-                simplifiedInputWSCAvg += statsInfo[1][j];
-                simplifiedSynSimilarAvg += statsInfo[2][j];
-                simplifiedSemSimilarAvg += statsInfo[3][j];
-                simplifiedSameFracAvg += statsInfo[4][j];
-                originalInputWSCAvg += statsInfo[5][j];
-                originalSynSimilarAvg += statsInfo[6][j];
-                originalSemSimilarAvg += statsInfo[7][j];
-                originalSameFracAvg += statsInfo[8][j];
-                tupleSizeAvg += statsInfo[9][j];
-                objectSizeAvg += statsInfo[10][j];
-                fieldNumAvg += statsInfo[11][j];
-                timeAvg += statsInfo[12][j];
-            }
-            minedWSCAvg = minedWSCAvg/policySize;
-            simplifiedInputWSCAvg = simplifiedInputWSCAvg/policySize;
-            simplifiedSynSimilarAvg = simplifiedSynSimilarAvg/policySize;
-            simplifiedSemSimilarAvg = simplifiedSemSimilarAvg/policySize;
-            simplifiedSameFracAvg = simplifiedSameFracAvg/policySize;
-            originalInputWSCAvg = originalInputWSCAvg/policySize;
-            originalSynSimilarAvg = originalSynSimilarAvg/policySize;
-            originalSemSimilarAvg = originalSemSimilarAvg/policySize;
-            originalSameFracAvg = originalSameFracAvg/policySize;
-            tupleSizeAvg = tupleSizeAvg/policySize;
-            objectSizeAvg = objectSizeAvg/policySize;
-            fieldNumAvg = fieldNumAvg/policySize;
-            timeAvg = timeAvg/policySize;
-            
-            for (int j = 0; j < policySize; j++){
-                minedWSCSd = minedWSCSd + ((statsInfo[0][j] - minedWSCAvg) * (statsInfo[0][j] - minedWSCAvg));
-                simplifiedInputWSCSd = simplifiedInputWSCSd + ((statsInfo[1][j] - simplifiedInputWSCAvg) * (statsInfo[1][j] - simplifiedInputWSCAvg));
-                simplifiedSynSimilarSd = simplifiedSynSimilarSd + ((statsInfo[2][j] - simplifiedSynSimilarAvg) * (statsInfo[2][j] - simplifiedSynSimilarAvg));
-                simplifiedSemSimilarSd = simplifiedSemSimilarSd + ((statsInfo[3][j] - simplifiedSemSimilarAvg) * (statsInfo[3][j] - simplifiedSemSimilarAvg));
-                simplifiedSameFracSd = simplifiedSameFracSd + ((statsInfo[4][j] - simplifiedSameFracAvg) * (statsInfo[4][j] - simplifiedSameFracAvg));
-                
-                originalInputWSCSd = originalInputWSCSd + ((statsInfo[5][j] - originalInputWSCAvg) * (statsInfo[5][j] - originalInputWSCAvg));
-                originalSynSimilarSd = originalSynSimilarSd + ((statsInfo[6][j] - originalSynSimilarAvg) * (statsInfo[6][j] - originalSynSimilarAvg));
-                originalSemSimilarSd = originalSemSimilarSd + ((statsInfo[7][j] - originalSemSimilarAvg) * (statsInfo[7][j] - originalSemSimilarAvg));
-                originalSameFracSd = originalSameFracSd + ((statsInfo[8][j] - originalSameFracAvg) * (statsInfo[8][j] - originalSameFracAvg));
-                
-                tupleSizeSd = tupleSizeSd + ((statsInfo[9][j] - tupleSizeAvg) * (statsInfo[9][j] - tupleSizeAvg));
-                objectSizeSd = objectSizeSd + ((statsInfo[10][j] - objectSizeAvg) * (statsInfo[10][j] - objectSizeAvg));
-                fieldNumSd = fieldNumSd + ((statsInfo[11][j] - fieldNumAvg) * (statsInfo[11][j] - fieldNumAvg));
-                
-                timeSd = timeSd + ((statsInfo[12][j] - timeAvg) * (statsInfo[12][j] - timeAvg));
-            }
-            minedWSCSd = minedWSCSd/policySize;
-            simplifiedInputWSCSd = simplifiedInputWSCSd/policySize;
-            simplifiedSynSimilarSd = simplifiedSynSimilarSd/policySize;
-            simplifiedSemSimilarSd = simplifiedSemSimilarSd/policySize;
-            simplifiedSameFracSd = simplifiedSameFracSd/policySize;
-            
-            originalInputWSCSd = originalInputWSCSd/policySize;
-            originalSynSimilarSd = originalSynSimilarSd/policySize;
-            originalSemSimilarSd = originalSemSimilarSd/policySize;
-            originalSameFracSd = originalSameFracSd/policySize;
-            
-            tupleSizeSd = tupleSizeSd/policySize;
-            objectSizeSd = objectSizeSd/policySize;
-            fieldNumSd = fieldNumSd/policySize;
-            timeSd = timeSd/policySize;
-            
-            minedWSCSd = Math.sqrt(minedWSCSd);
-            simplifiedInputWSCSd = Math.sqrt(simplifiedInputWSCSd);
-            simplifiedSynSimilarSd = Math.sqrt(simplifiedSynSimilarSd);
-            simplifiedSemSimilarSd = Math.sqrt(simplifiedSemSimilarSd);
-            simplifiedSameFracSd = Math.sqrt(simplifiedSameFracSd);
-            
-            originalInputWSCSd = Math.sqrt(originalInputWSCSd);
-            originalSynSimilarSd = Math.sqrt(originalSynSimilarSd);
-            originalSemSimilarSd = Math.sqrt(originalSemSimilarSd);
-            originalSameFracSd = Math.sqrt(originalSameFracSd);
-            
-            tupleSizeSd = Math.sqrt(tupleSizeSd);
-            objectSizeSd = Math.sqrt(objectSizeSd);
-            fieldNumSd = Math.sqrt(fieldNumSd);
-            timeSd = Math.sqrt(timeSd);
-            
-            long avgCPUTime = totalTime/policySize;
-            
-            long totalCPUTimeMillis = (long) (totalTime * 0.000001);
-            String time = String.format("%d min, %d sec",
-                    TimeUnit.MILLISECONDS.toMinutes(totalCPUTimeMillis),
-                    TimeUnit.MILLISECONDS.toSeconds(totalCPUTimeMillis) -
-                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(totalCPUTimeMillis))
-            );
-            
-            long avgCPUTimeMillis = (long) (avgCPUTime * 0.000001);
-            String timeAvgStr = String.format("%d min, %d sec",
-                    TimeUnit.MILLISECONDS.toMinutes(avgCPUTimeMillis),
-                    TimeUnit.MILLISECONDS.toSeconds(avgCPUTimeMillis) -
-                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(avgCPUTimeMillis))
-            );
-            
-            double timeAvgSec = (long) (timeAvg * 0.000001) * 0.001;
-            String timeAvgSecStr = String.format("%.1f sec", timeAvgSec);
-            
-            double timeSdSec = (long) (timeSd * 0.000001) * 0.001;
-            String timeSdStr = String.format("%.3f sec", timeSdSec);
-            
-            // output to file
-            try{
-                FileWriter fileWriter = new FileWriter(config.getOutputPath() + config.getPolicyName() + "_" + size + "/" + config.getPolicyName() + "_" + size + ".output");
-                BufferedWriter outputWrite = new BufferedWriter(fileWriter);
-                outputWrite.write("Policy: " + config.getPolicyName() + "_" + size + "\n");
-                outputWrite.write("Average Mined Policy WSC: " + minedWSCAvg + " Standard Deviation: "+ minedWSCSd + "\n");
-                outputWrite.write("Average Simplified Input Policy WSC: " + simplifiedInputWSCAvg + " Standard Deviation: "+ simplifiedInputWSCSd + "\n");
-                outputWrite.write("Average Policy Syntactic Similarity(Compare with simplified input rules): " + simplifiedSynSimilarAvg +" Standard Deviation: " + simplifiedSynSimilarSd + "\n");
-                outputWrite.write("Average Rule-wise Semantic Similarity(Compare with simplified input rules): " + simplifiedSemSimilarAvg +" Standard Deviation: " + simplifiedSemSimilarSd + "\n");
-                outputWrite.write("Average Fraction of Simplified Rules in Both Input and Mined Policy: " + simplifiedSameFracAvg +" Standard Deviation: " + simplifiedSameFracSd + "\n");
-                outputWrite.write("\n");
-                outputWrite.write("Average Original Input Policy WSC: " + originalInputWSCAvg + " Standard Deviation: "+ originalInputWSCSd + "\n");
-                outputWrite.write("Average Policy Syntactic Similarity(Compare with original input rules): " + originalSynSimilarAvg +" Standard Deviation: " + originalSynSimilarSd + "\n");
-                outputWrite.write("Average Rule-wise Semantic Similarity(Compare with original input rules): " + originalSemSimilarAvg +" Standard Deviation: " + originalSemSimilarSd + "\n");
-                outputWrite.write("Average Fraction of Original Rules in Both Input and Mined Policy: " + originalSameFracAvg +" Standard Deviation: " + originalSameFracSd + "\n");
-                outputWrite.write("\n");
-                outputWrite.write("Average Tuple Size: " + tupleSizeAvg + " Standard Deviation: "+ tupleSizeSd + "\n");
-                outputWrite.write("Average Object Size: " + objectSizeAvg +" Standard Deviation: " + objectSizeSd + "\n");
-                outputWrite.write("Average Total Field Number: " + fieldNumAvg +" Standard Deviation: " + fieldNumSd + "\n");
-                outputWrite.write("\n");
-                outputWrite.write("Total CPU Time: " + time + "\n");
-                outputWrite.write("Average Time: " + timeAvgStr + "\n");
-                outputWrite.write("Average time in seconds: " + timeAvgSecStr + "\n");
-                outputWrite.write("Standard deviation of time in seconds: " + timeSdStr + "\n");
-                outputWrite.close();
+			
+			if (policySize == 1){
+				try {
+					FileWriter outFileWriter = new FileWriter(config.getOutputFile(), true);
+					BufferedWriter outFileWrite = new BufferedWriter(outFileWriter);
+					outFileWrite.write("Phase 2: Improving Policy Step: \n===============================\n");
+					outFileWrite.write("Average Mined Policy WSC: " + statsInfo[0][0] + " Standard Deviation: 0.0\n");
+					outFileWrite.write("Average Policy Syntactic Similarity(Compare with simplified input rules): " + statsInfo[2][0] +" Standard Deviation: 0.0\n");
+					
+					double timeSec = (long) (statsInfo[2][0] * 0.000001) * 0.001;
+					String timeSecStr = String.format("%.1f sec", timeAvgSec);
+					
+					outFileWrite.write("Average time in seconds: " + timeSecStr + "\n");
+					outFileWrite.close();
+				}
+				catch (IOException e){
+					e.printStackTrace();
+				}
+			}
+			else{
+			
+			
+				// calculate the average and sd of the stats
+				double minedWSCAvg = 0;
+				double minedWSCSd = 0;
+				double simplifiedInputWSCAvg = 0;
+				double simplifiedInputWSCSd = 0;
+				double simplifiedSynSimilarAvg = 0;
+				double simplifiedSynSimilarSd = 0;
+				double simplifiedSemSimilarAvg = 0;
+				double simplifiedSemSimilarSd = 0;
+				double simplifiedSameFracAvg = 0;
+				double simplifiedSameFracSd = 0;
 				
+				double originalInputWSCAvg = 0;
+				double originalInputWSCSd = 0;
+				double originalSynSimilarAvg = 0;
+				double originalSynSimilarSd = 0;
+				double originalSemSimilarAvg = 0;
+				double originalSemSimilarSd = 0;
+				double originalSameFracAvg = 0;
+				double originalSameFracSd = 0;
 				
-				FileWriter outFileWriter = new FileWriter(config.getOutputFile(), true);
-                BufferedWriter outFileWrite = new BufferedWriter(outFileWriter);
-				outFileWrite.write("Phase 2: Improving Policy Step: \n===============================\n");
-				outFileWrite.write("Average Mined Policy WSC: " + minedWSCAvg + " Standard Deviation: "+ minedWSCSd + "\n");
-                outFileWrite.write("Average Policy Syntactic Similarity(Compare with simplified input rules): " + simplifiedSynSimilarAvg +" Standard Deviation: " + simplifiedSynSimilarSd + "\n");
-				outFileWrite.write("Average Time: " + timeAvgStr + "\n");
-                outFileWrite.write("Average time in seconds: " + timeAvgSecStr + "\n");
-                outFileWrite.write("Standard deviation of time in seconds: " + timeSdStr + "\n");
-				outFileWrite.close();
-            }
-            catch (IOException e){
-                e.printStackTrace();
-            }
+				double tupleSizeAvg = 0;
+				double tupleSizeSd = 0;
+				double objectSizeAvg = 0;
+				double objectSizeSd = 0;
+				double fieldNumAvg = 0;
+				double fieldNumSd = 0;
+				
+				double timeAvg = 0;
+				double timeSd = 0;
+				
+				for (int j = 0; j < policySize; j++){
+					minedWSCAvg += statsInfo[0][j];
+					simplifiedInputWSCAvg += statsInfo[1][j];
+					simplifiedSynSimilarAvg += statsInfo[2][j];
+					simplifiedSemSimilarAvg += statsInfo[3][j];
+					simplifiedSameFracAvg += statsInfo[4][j];
+					originalInputWSCAvg += statsInfo[5][j];
+					originalSynSimilarAvg += statsInfo[6][j];
+					originalSemSimilarAvg += statsInfo[7][j];
+					originalSameFracAvg += statsInfo[8][j];
+					tupleSizeAvg += statsInfo[9][j];
+					objectSizeAvg += statsInfo[10][j];
+					fieldNumAvg += statsInfo[11][j];
+					timeAvg += statsInfo[12][j];
+				}
+				minedWSCAvg = minedWSCAvg/policySize;
+				simplifiedInputWSCAvg = simplifiedInputWSCAvg/policySize;
+				simplifiedSynSimilarAvg = simplifiedSynSimilarAvg/policySize;
+				simplifiedSemSimilarAvg = simplifiedSemSimilarAvg/policySize;
+				simplifiedSameFracAvg = simplifiedSameFracAvg/policySize;
+				originalInputWSCAvg = originalInputWSCAvg/policySize;
+				originalSynSimilarAvg = originalSynSimilarAvg/policySize;
+				originalSemSimilarAvg = originalSemSimilarAvg/policySize;
+				originalSameFracAvg = originalSameFracAvg/policySize;
+				tupleSizeAvg = tupleSizeAvg/policySize;
+				objectSizeAvg = objectSizeAvg/policySize;
+				fieldNumAvg = fieldNumAvg/policySize;
+				timeAvg = timeAvg/policySize;
+				
+				for (int j = 0; j < policySize; j++){
+					minedWSCSd = minedWSCSd + ((statsInfo[0][j] - minedWSCAvg) * (statsInfo[0][j] - minedWSCAvg));
+					simplifiedInputWSCSd = simplifiedInputWSCSd + ((statsInfo[1][j] - simplifiedInputWSCAvg) * (statsInfo[1][j] - simplifiedInputWSCAvg));
+					simplifiedSynSimilarSd = simplifiedSynSimilarSd + ((statsInfo[2][j] - simplifiedSynSimilarAvg) * (statsInfo[2][j] - simplifiedSynSimilarAvg));
+					simplifiedSemSimilarSd = simplifiedSemSimilarSd + ((statsInfo[3][j] - simplifiedSemSimilarAvg) * (statsInfo[3][j] - simplifiedSemSimilarAvg));
+					simplifiedSameFracSd = simplifiedSameFracSd + ((statsInfo[4][j] - simplifiedSameFracAvg) * (statsInfo[4][j] - simplifiedSameFracAvg));
+					
+					originalInputWSCSd = originalInputWSCSd + ((statsInfo[5][j] - originalInputWSCAvg) * (statsInfo[5][j] - originalInputWSCAvg));
+					originalSynSimilarSd = originalSynSimilarSd + ((statsInfo[6][j] - originalSynSimilarAvg) * (statsInfo[6][j] - originalSynSimilarAvg));
+					originalSemSimilarSd = originalSemSimilarSd + ((statsInfo[7][j] - originalSemSimilarAvg) * (statsInfo[7][j] - originalSemSimilarAvg));
+					originalSameFracSd = originalSameFracSd + ((statsInfo[8][j] - originalSameFracAvg) * (statsInfo[8][j] - originalSameFracAvg));
+					
+					tupleSizeSd = tupleSizeSd + ((statsInfo[9][j] - tupleSizeAvg) * (statsInfo[9][j] - tupleSizeAvg));
+					objectSizeSd = objectSizeSd + ((statsInfo[10][j] - objectSizeAvg) * (statsInfo[10][j] - objectSizeAvg));
+					fieldNumSd = fieldNumSd + ((statsInfo[11][j] - fieldNumAvg) * (statsInfo[11][j] - fieldNumAvg));
+					
+					timeSd = timeSd + ((statsInfo[12][j] - timeAvg) * (statsInfo[12][j] - timeAvg));
+				}
+				minedWSCSd = minedWSCSd/policySize;
+				simplifiedInputWSCSd = simplifiedInputWSCSd/policySize;
+				simplifiedSynSimilarSd = simplifiedSynSimilarSd/policySize;
+				simplifiedSemSimilarSd = simplifiedSemSimilarSd/policySize;
+				simplifiedSameFracSd = simplifiedSameFracSd/policySize;
+				
+				originalInputWSCSd = originalInputWSCSd/policySize;
+				originalSynSimilarSd = originalSynSimilarSd/policySize;
+				originalSemSimilarSd = originalSemSimilarSd/policySize;
+				originalSameFracSd = originalSameFracSd/policySize;
+				
+				tupleSizeSd = tupleSizeSd/policySize;
+				objectSizeSd = objectSizeSd/policySize;
+				fieldNumSd = fieldNumSd/policySize;
+				timeSd = timeSd/policySize;
+				
+				minedWSCSd = Math.sqrt(minedWSCSd);
+				simplifiedInputWSCSd = Math.sqrt(simplifiedInputWSCSd);
+				simplifiedSynSimilarSd = Math.sqrt(simplifiedSynSimilarSd);
+				simplifiedSemSimilarSd = Math.sqrt(simplifiedSemSimilarSd);
+				simplifiedSameFracSd = Math.sqrt(simplifiedSameFracSd);
+				
+				originalInputWSCSd = Math.sqrt(originalInputWSCSd);
+				originalSynSimilarSd = Math.sqrt(originalSynSimilarSd);
+				originalSemSimilarSd = Math.sqrt(originalSemSimilarSd);
+				originalSameFracSd = Math.sqrt(originalSameFracSd);
+				
+				tupleSizeSd = Math.sqrt(tupleSizeSd);
+				objectSizeSd = Math.sqrt(objectSizeSd);
+				fieldNumSd = Math.sqrt(fieldNumSd);
+				timeSd = Math.sqrt(timeSd);
+				
+				long avgCPUTime = totalTime/policySize;
+				
+				long totalCPUTimeMillis = (long) (totalTime * 0.000001);
+				String time = String.format("%d min, %d sec",
+						TimeUnit.MILLISECONDS.toMinutes(totalCPUTimeMillis),
+						TimeUnit.MILLISECONDS.toSeconds(totalCPUTimeMillis) -
+								TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(totalCPUTimeMillis))
+				);
+				
+				long avgCPUTimeMillis = (long) (avgCPUTime * 0.000001);
+				String timeAvgStr = String.format("%d min, %d sec",
+						TimeUnit.MILLISECONDS.toMinutes(avgCPUTimeMillis),
+						TimeUnit.MILLISECONDS.toSeconds(avgCPUTimeMillis) -
+								TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(avgCPUTimeMillis))
+				);
+				
+				double timeAvgSec = (long) (timeAvg * 0.000001) * 0.001;
+				String timeAvgSecStr = String.format("%.1f sec", timeAvgSec);
+				
+				double timeSdSec = (long) (timeSd * 0.000001) * 0.001;
+				String timeSdStr = String.format("%.3f sec", timeSdSec);
+				
+				// output to file
+				try{
+					FileWriter fileWriter = new FileWriter(config.getOutputPath() + config.getPolicyName() + "_" + size + "/" + config.getPolicyName() + "_" + size + ".output");
+					BufferedWriter outputWrite = new BufferedWriter(fileWriter);
+					outputWrite.write("Policy: " + config.getPolicyName() + "_" + size + "\n");
+					outputWrite.write("Average Mined Policy WSC: " + minedWSCAvg + " Standard Deviation: "+ minedWSCSd + "\n");
+					outputWrite.write("Average Simplified Input Policy WSC: " + simplifiedInputWSCAvg + " Standard Deviation: "+ simplifiedInputWSCSd + "\n");
+					outputWrite.write("Average Policy Syntactic Similarity(Compare with simplified input rules): " + simplifiedSynSimilarAvg +" Standard Deviation: " + simplifiedSynSimilarSd + "\n");
+					outputWrite.write("Average Rule-wise Semantic Similarity(Compare with simplified input rules): " + simplifiedSemSimilarAvg +" Standard Deviation: " + simplifiedSemSimilarSd + "\n");
+					outputWrite.write("Average Fraction of Simplified Rules in Both Input and Mined Policy: " + simplifiedSameFracAvg +" Standard Deviation: " + simplifiedSameFracSd + "\n");
+					outputWrite.write("\n");
+					outputWrite.write("Average Original Input Policy WSC: " + originalInputWSCAvg + " Standard Deviation: "+ originalInputWSCSd + "\n");
+					outputWrite.write("Average Policy Syntactic Similarity(Compare with original input rules): " + originalSynSimilarAvg +" Standard Deviation: " + originalSynSimilarSd + "\n");
+					outputWrite.write("Average Rule-wise Semantic Similarity(Compare with original input rules): " + originalSemSimilarAvg +" Standard Deviation: " + originalSemSimilarSd + "\n");
+					outputWrite.write("Average Fraction of Original Rules in Both Input and Mined Policy: " + originalSameFracAvg +" Standard Deviation: " + originalSameFracSd + "\n");
+					outputWrite.write("\n");
+					outputWrite.write("Average Tuple Size: " + tupleSizeAvg + " Standard Deviation: "+ tupleSizeSd + "\n");
+					outputWrite.write("Average Object Size: " + objectSizeAvg +" Standard Deviation: " + objectSizeSd + "\n");
+					outputWrite.write("Average Total Field Number: " + fieldNumAvg +" Standard Deviation: " + fieldNumSd + "\n");
+					outputWrite.write("\n");
+					outputWrite.write("Total CPU Time: " + time + "\n");
+					outputWrite.write("Average Time: " + timeAvgStr + "\n");
+					outputWrite.write("Average time in seconds: " + timeAvgSecStr + "\n");
+					outputWrite.write("Standard deviation of time in seconds: " + timeSdStr + "\n");
+					outputWrite.close();
+					
+					
+					FileWriter outFileWriter = new FileWriter(config.getOutputFile(), true);
+					BufferedWriter outFileWrite = new BufferedWriter(outFileWriter);
+					outFileWrite.write("Phase 2: Improving Policy Step: \n===============================\n");
+					outFileWrite.write("Average Mined Policy WSC: " + minedWSCAvg + " Standard Deviation: "+ minedWSCSd + "\n");
+					outFileWrite.write("Average Policy Syntactic Similarity(Compare with simplified input rules): " + simplifiedSynSimilarAvg +" Standard Deviation: " + simplifiedSynSimilarSd + "\n");
+					outFileWrite.write("Average Time: " + timeAvgStr + "\n");
+					outFileWrite.write("Average time in seconds: " + timeAvgSecStr + "\n");
+					outFileWrite.write("Standard deviation of time in seconds: " + timeSdStr + "\n");
+					outFileWrite.close();
+				}
+				catch (IOException e){
+					e.printStackTrace();
+				}
+			}
         }
     }
 }
