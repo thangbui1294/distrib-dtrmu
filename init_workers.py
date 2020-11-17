@@ -25,7 +25,7 @@ Content-Transfer-Encoding: 7bit
 Content-Disposition: attachment; filename="userdata.txt"
 \n"""
 		start_processes = ""
-		for p_name in process_names:
+		for p_name in processNames:
 			start_processes += '\"python3 -m da -n ' + p_name + ' -D main.da\" '
 		bashOnRun = "\n".join(["#!/bin/bash",
 			"sudo yum update -y",
@@ -65,7 +65,7 @@ def create_worker_machines(num_vms, num_workers_per_vm):
 		bashFileName = f"./inst-bash/VM-{i}.bash"
 		process_names = []
 		for j in range(num_workers_per_vm):
-			node_id = i * len(num_workers_per_vm) + j + 1
+			node_id = i * num_workers_per_vm + j + 1
 			process_names.append(f"Worker{node_id}")
 		writeAwsRunInstFile(process_names, bashFileName)
 
@@ -96,9 +96,9 @@ def create_worker_machines(num_vms, num_workers_per_vm):
 		ipAddr = parseNewInstFeedbackToIp(outputMsg)
 		daAddrs = []
 		for j in range(num_workers_per_vm):
-			node_id = i * len(num_workers_per_vm) + j + 1
+			node_id = i * num_workers_per_vm + j + 1
 			node_name = f"Worker{node_id}"
-			daAddrs.append(f"{nodeName}@{ipAddr}")
+			daAddrs.append(f"{node_name}@{ipAddr}")
 		print(daAddrs)
 
 		with open("./newDaAddr.config", "a") as f:

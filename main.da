@@ -25,7 +25,7 @@ class Master(process):
 		begin_elapsed_time = time.time()
 		begin_cpu_time = time.process_time()
 
-		while (len(self.workers) != 0 && len(self.remain_jobs) != 0):
+		while (len(self.workers) != 0 and len(self.remain_jobs) != 0):
 			send(('JobAssign', remain_jobs.pop(0)), to=self.workers.pop(0))
 		
 		await(self.num_done_jobs == self.num_jobs)	
@@ -89,10 +89,10 @@ class Worker(process):
   
 def main():
 	# read list of configs from file
-	configs_list_file =  "/home/ec2-user/run-exp/conifgs_list.txt"
+	configs_list_file =  "/home/ec2-user/distrib-dtrmu/run-exp/configs_list.txt"
 	job_configs = []
 	with open(configs_list_file, "r") as configs_f:
-		for config in conigs_f:
+		for config in configs_f:
 			if "#" not in config:
 				job_configs.append(config.strip())
 
