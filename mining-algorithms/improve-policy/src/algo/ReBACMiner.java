@@ -4168,7 +4168,7 @@ public class ReBACMiner {
 					outFileWrite.write("Average Policy Syntactic Similarity(Compare with simplified input rules): " + statsInfo[2][0] +" Standard Deviation: 0.0\n");
 					
 					double timeSec = (long) (statsInfo[2][0] * 0.000001) * 0.001;
-					String timeSecStr = String.format("%.1f sec", timeAvgSec);
+					String timeSecStr = String.format("%.1f sec", timeSec);
 					
 					outFileWrite.write("Average time in seconds: " + timeSecStr + "\n");
 					outFileWrite.close();
