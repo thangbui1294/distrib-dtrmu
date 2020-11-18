@@ -57,12 +57,12 @@ class Master(process):
 					total_mining_elapsed_time += results[worker][job][2]
 					total_mining_cpu_time += results[worker][job][1]
 				out_f.write('\n\n')
-			out_f.write('============================================\nElapsed time at master node: ' + str(elapsed_time) + ' sec\n')
-			out_f.write('============================================\nCPU time at master node: ' + str(cpu_time) + ' sec\n')
-			out_f.write('============================================\nTotal CPU time at worker nodes: ' + str(total_workers_cpu_time) + ' sec\n')
-			out_f.write('============================================\nTotal CPU time for mining policies worker nodes: ' + str(total_mining_cpu_time) + ' sec\n')
-			out_f.write('============================================\nTotal elapsed time at worker nodes: ' + str(total_workers_elapsed_time) + ' sec\n')
-			out_f.write('============================================\nTotal elapsed time for mining policies at worker nodes: ' + str(total_mining_elapsed_time) + ' sec\n')
+			out_f.write('============================================\nElapsed time at master process: ' + str(elapsed_time) + ' sec\n')
+			out_f.write('============================================\nCPU time at master process: ' + str(cpu_time) + ' sec\n')
+			out_f.write('============================================\nTotal CPU time of all mining processes: ' + str(total_mining_cpu_time) + ' sec\n')
+			out_f.write('============================================\nTotal CPU time of all worker processes: ' + str(total_workers_cpu_time) + ' sec\n')
+			out_f.write('============================================\nTotal elapsed time of all mining processes: ' + str(total_mining_elapsed_time) + ' sec\n')
+			out_f.write('============================================\nTotal elapsed time of all worker processes: ' + str(total_workers_elapsed_time) + ' sec\n')
 			out_f.write('============================================\nSpeed up on elapsed time: ' + str(total_mining_elapsed_time/elapsed_time) + '\n')
 
 class Worker(process):
