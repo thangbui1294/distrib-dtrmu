@@ -91,14 +91,6 @@ class Worker(process):
 		begin_elapsed_mining_time = time.time()
 		# run the algorithm.
 		subprocess.run('sh /home/ec2-user/distrib-dtrmu/run-exp/run_' + str(config) + '.bash', shell=True)
-		config_names = config.split('_')
-		policy = config_names[0]
-		if 'edoc' in policy:
-			policy = 'e-doc'
-		s = config_names[1]
-		policy_index = config_names[2]
-		size = '10' if 'eWorkforce' in policy else '75'
-		#subprocess.run('sudo rm -r /home/ec2-user/distrib-dtrmu/mining-algorithms/dataset/learning-data/scaling_f_' + s + '/' + policy_name + '_' + size + '/' + policy_name + '_' + size + '_' + policy_index, shell=True)
 		elapsed_mining_time = time.time() - begin_elapsed_mining_time
 		# read the output files and extract the results .
 		results = {}
@@ -106,7 +98,11 @@ class Worker(process):
 		names = config.split('_')
 		policy_name = names[0] + '_10' if 'eWorkforce' in names[0] else 'e-doc_75'
 		scale_f = names[1]
-		output_file_path = './mining-algorithms/output/scaling_f_' + scale_f + '/output_' + policy_name + '_' + names[2] + '.txt'
+		policy_index = names[2]
+
+		subprocess.run('sudo rm -r /home/ec2-user/distrib-dtrmu/mining-algorithms/dataset/learning-data/scaling_f_' + scale_f + '/' + policy_name + '/' + policy_name +  '_' + policy_index, shell=True)
+		
+		output_file_path = './mining-algorithms/output/scaling_f_' + scale_f + '/output_' + policy_name + '_' + policy_index + '.txt'
 
 		# compute average cpu time and average syntactic similarity from output file
 		avg_time, avg_syn_sim = 0.0, 0.0
