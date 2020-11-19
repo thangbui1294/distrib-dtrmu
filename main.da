@@ -8,8 +8,7 @@ class Master(process):
 	def setup(workers, job_configs): 
 		self.results = {}
 		self.workers_elapse_time = {}
-		self.num_jobs = len(job_configs)
-		self.num_done_jobs = 0
+		self.num_workers = len(workers)
 		self.remain_jobs = job_configs
 
 	def receive(msg=('Done', time), from_= w): 
@@ -21,7 +20,6 @@ class Master(process):
 			results[str(w)] = {}
 		self.results[str(w)][output[0]] = output[1]
 		output("Received 'DoneJob' from " + str(w) + '\nOutput: ' + str(output))
-		self.num_done_jobs += 1
 		if len(self.remain_jobs) != 0:
 			next_job = self.remain_jobs.pop(0)
 			send(('JobAssign', next_job), to=w)
@@ -38,7 +36,7 @@ class Master(process):
 			send(('JobAssign', next_job), to=next_worker)
 			output("Send job " + next_job + ' to ' + str(next_worker))
 		
-		await(self.num_done_jobs == self.num_jobs)	
+		await(len(self.workers_elapse_time) == self.num_workers) # assuming that number of workers is less than number of jobs.	
 
 		output("Received outputs from all workers\nResults: " + str(self.results))
 
