@@ -7,9 +7,13 @@ class Master(process):
 	
 	def setup(workers, job_configs): 
 		self.results = {}
+		self.workers_elapse_time = {}
 		self.num_jobs = len(job_configs)
 		self.num_done_jobs = 0
 		self.remain_jobs = job_configs
+
+	def receive(msg=('Done', time), from_= w): 
+		self.workers_elapse_time[str(w)] = time
 
 	def receive(msg=('DoneJob', output), from_= w): 
 		# collect output
@@ -20,7 +24,7 @@ class Master(process):
 		self.num_done_jobs += 1
 		if len(self.remain_jobs) != 0:
 			next_job = self.remain_jobs.pop(0)
-			send(('JobAssign', ), to=w)
+			send(('JobAssign', next_job), to=w)
 			output("Send job " + next_job + ' to ' + str(w))
 		else:
 			send(('Done', ), to=w)
@@ -52,13 +56,14 @@ class Master(process):
 				out_f.write('============================================\n' + worker + '\n--------------------\n')
 				for job in self.results[worker]:
 					out_f.write(job + ': ' + str(self.results[worker][job]) + '\n')
-					total_workers_elapsed_time += results[worker][job][4]
 					total_workers_cpu_time += results[worker][job][3]
 					total_mining_elapsed_time += results[worker][job][2]
 					total_mining_cpu_time += results[worker][job][1]
+				out_f.write('Elapsed time: ' + str(self.workers_elapse_time[worker]) + '\n')
+				total_workers_elapsed_time += self.workers_elapse_time[worker]
 				out_f.write('\n\n')
-			out_f.write('============================================\nElapsed time at master process: ' + str(elapsed_time) + ' sec\n')
-			out_f.write('============================================\nCPU time at master process: ' + str(cpu_time) + ' sec\n')
+			out_f.write('============================================\nElapsed time of master process: ' + str(elapsed_time) + ' sec\n')
+			out_f.write('============================================\nCPU time of master process: ' + str(cpu_time) + ' sec\n')
 			out_f.write('============================================\nTotal CPU time of all mining processes: ' + str(total_mining_cpu_time) + ' sec\n')
 			out_f.write('============================================\nTotal CPU time of all worker processes: ' + str(total_workers_cpu_time) + ' sec\n')
 			out_f.write('============================================\nTotal elapsed time of all mining processes: ' + str(total_mining_elapsed_time) + ' sec\n')
@@ -67,7 +72,8 @@ class Master(process):
 
 class Worker(process):
 	
-	def setup(): pass
+	def setup():
+		self.start_elapsed_time = -1
 
 	def receive(msg=('JobAssign', job), from_= master): 
 		begin_cpu_time = time.process_time()
@@ -76,9 +82,12 @@ class Worker(process):
 		# run policy mining method
 		output = minePolicies(job)
 		output.append(time.process_time() - begin_cpu_time)
-		output.append(time.time() - begin_elasped_time)
 		results = (job, output)
 		send(('DoneJob', results), to=master)
+
+	def receive(msg=('Done', ), from_= master): 
+		elapsed_time = time.process_time() - self.start_elapsed_time
+		send(('Done', elapsed_time), to=master)
 
 	def minePolicies(config):
 		begin_elapsed_mining_time = time.time()
@@ -111,6 +120,7 @@ class Worker(process):
 
 
 	def run():
+		self.start_elapsed_time = time.process_time()
 		await(some(received(('Done',), from_=master)))
 		
   
