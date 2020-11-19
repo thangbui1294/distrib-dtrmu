@@ -26,7 +26,7 @@ Content-Disposition: attachment; filename="userdata.txt"
 \n"""
 		start_processes = ""
 		for p_name in processNames:
-			start_processes += '\"python3 -m da -n ' + p_name + ' -D main.da\" '
+			start_processes += '\"python3 -m da --message-buffer-size 4096000 -n ' + p_name + ' -D main.da\" '
 		bashOnRun = "\n".join(["#!/bin/bash",
 			"sudo yum update -y",
 			"sudo yum -y install python37 -y",
