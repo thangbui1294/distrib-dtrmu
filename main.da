@@ -36,7 +36,7 @@ class Master(process):
 			send(('JobAssign', next_job), to=next_worker)
 			output("Send job " + next_job + ' to ' + str(next_worker))
 		
-		await(len(self.workers_elapse_time) == self.num_workers) # assuming that number of workers is less than number of jobs.	
+		await(len(self.workers_elapse_time) == self.num_workers) # assuming that number of workers is less than or equal number of jobs.	
 
 		output("Received outputs from all workers\nResults: " + str(self.results))
 
@@ -84,7 +84,7 @@ class Worker(process):
 		send(('DoneJob', results), to=master)
 
 	def receive(msg=('Done', ), from_= master): 
-		elapsed_time = time.process_time() - self.start_elapsed_time
+		elapsed_time = time.time() - self.start_elapsed_time
 		send(('Done', elapsed_time), to=master)
 
 	def minePolicies(config):
@@ -118,7 +118,7 @@ class Worker(process):
 
 
 	def run():
-		self.start_elapsed_time = time.process_time()
+		self.start_elapsed_time = time.time()
 		await(some(received(('Done',), from_=master)))
 		
   
