@@ -98,7 +98,7 @@ class Worker(process):
 		s = config_names[1]
 		policy_index = config_names[2]
 		size = '10' if 'eWorkforce' in policy else '75'
-		subprocess.run('sudo rm -r /home/ec2-user/distrib-dtrmu/mining-algorithms/dataset/learning-data/scaling_f_' + s + '/' + policy_name + '_' + size + '/' + policy_name + '_' + size + '_' + policy_index, shell=True)
+		#subprocess.run('sudo rm -r /home/ec2-user/distrib-dtrmu/mining-algorithms/dataset/learning-data/scaling_f_' + s + '/' + policy_name + '_' + size + '/' + policy_name + '_' + size + '_' + policy_index, shell=True)
 		elapsed_mining_time = time.time() - begin_elapsed_mining_time
 		# read the output files and extract the results .
 		results = {}
